@@ -159,8 +159,7 @@ function App() {
                 component="nav"
                 aria-labelledby="nested-list-subheader"
                 subheader={
-                    <ListSubheader component="div" id="nested-list-subheader"
-                                   style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                    <ListSubheader component="div" id="nested-list-subheader">
                         <span>Restaurant Menu</span>
                     </ListSubheader>
                 }

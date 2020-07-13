@@ -1,9 +1,8 @@
-import './App.css';
 import React, {useEffect, useState} from 'react';
 import {makeStyles, List, TextField, ListSubheader} from '@material-ui/core';
 import styled from "styled-components";
 import Root from './Root.js'
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import RenderSearchItems from "./SearchItems";
 
 const Container = styled.div`
     display: flex;
@@ -30,12 +29,23 @@ const InputContainer = styled.div`
     }
 `;
 
-const SearchItem = styled.div`
-   font-weight: ${props => props.highlight ? 'bold' : 'normal'};
-`;
+export let asd = null;
 
-export const menuItems =
-    [{
+export const useStyles = makeStyles((theme) => ({
+    root: {
+        width: '100%',
+        maxWidth: 360,
+        backgroundColor: theme.palette.background.paper
+    },
+    nested: {
+        paddingLeft: theme.spacing(4),
+    }
+}));
+
+function App() {
+
+    const [searchArray, setSearchArray] = useState([{}]);
+    const [menuItems, setMenuItems] = useState([{
         name: "Omelette",
         id: 1,
         level: 0,
@@ -103,24 +113,8 @@ export const menuItems =
                 }]
             }
         ]
-    }];
-
-export const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-        maxWidth: 360,
-        backgroundColor: theme.palette.background.paper
-    },
-    nested: {
-        paddingLeft: theme.spacing(4),
-    }
-}));
-
-function App() {
-
-    const [searchArray, setSearchArray] = useState([{}]);
+    }]);
     const [mealArray, setMealArray] = useState([]);
-    const [highlightArray, setHighlightArray] = useState([]);
 
     const classes = useStyles();
     let parent = null;
@@ -151,22 +145,13 @@ function App() {
         const allergenArray = ingredientArray.filter(item => e.target.value !== "" && item.name.toLowerCase().startsWith(e.target.value.toLowerCase()));
         setSearchArray(allergenArray);
         setMealArray(reduceFoodArray(allergenArray));
-        setHighlightArray([]);
     };
 
     const highlightMeal = (ingredient) => {
-        let highlightArrayNew = [];
-        searchArray.forEach(item => item.master === ingredient && highlightArrayNew.push(ingredient));
-        setHighlightArray(highlightArrayNew);
+        let highlightArrayNew = null;
+        searchArray.forEach(item => item.master === ingredient && (highlightArrayNew = ingredient));
+        return highlightArrayNew;
     };
-
-    const addNewItem = () => {
-        console.log('a')
-    }
-
-    const renderSearchItem = () => searchArray && mealArray.map((item, index) => <SearchItem
-        onClick={() => highlightMeal(item)}
-        key={index + "_"}>{item.name}</SearchItem>);
 
     return (
         <Container>
@@ -174,21 +159,22 @@ function App() {
                 component="nav"
                 aria-labelledby="nested-list-subheader"
                 subheader={
-                    <ListSubheader component="div" id="nested-list-subheader">
-                        Restaurant Menu
-                        <AddCircleIcon onClick={addNewItem}/>
+                    <ListSubheader component="div" id="nested-list-subheader"
+                                   style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <span>Restaurant Menu</span>
                     </ListSubheader>
                 }
                 className={classes.root}
             >
                 {menuItems.map(component => {
-                    return <Root {...component} asd={highlightArray}
+                    return <Root {...component} highlight={highlightMeal(component)}
                                  key={"a" + component.id}/>
                 })}
             </StyledList>
             <InputContainer>
                 <TextField label="Check allergen" variant="outlined" onChange={handleChange}/>
-                <AllergenList>{renderSearchItem()}</AllergenList>
+                <AllergenList><RenderSearchItems searchArray={searchArray} highlightMeal={highlightMeal}
+                                                 mealArray={mealArray}/></AllergenList>
             </InputContainer>
         </Container>
     );

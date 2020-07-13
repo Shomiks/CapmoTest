@@ -1,4 +1,3 @@
-import './App.css';
 import {List, ListItem} from '@material-ui/core';
 import {ListItemText} from '@material-ui/core';
 import React, {useState} from 'react';
@@ -10,7 +9,7 @@ import {useStyles} from './App';
 import styled from "styled-components";
 
 const StyledRoot = styled(ListItem)`
-    background: ${props => props.asd ? 'red' : 'default'};
+    background: ${props => props.highlight ? 'red' : 'default'};
 `;
 
 function Root(component) {
@@ -22,14 +21,14 @@ function Root(component) {
 
     return <>
       <List key={component.id + component.name + component.level} className={component.level === 0 ? classes.root : classes.nested}>
-            <StyledRoot asd={component.asd[0] && component.name === component.asd[0].name} button onClick={handleClick} id={component.id} >
+          <StyledRoot highlight={component.highlight && component.name === component.highlight.name} button onClick={handleClick} id={component.id} >
                 <ListItemText primary={id + " " + component.name}/>
-                {component.nested && (open ? <ExpandLess/> : <ExpandMore/>)}
+                {component.nested && component.nested.length > 0 && (open ? <ExpandLess/> : <ExpandMore/>)}
             </StyledRoot>
             <Divider light={component.level !== 0}/>
             {component.nested && <Collapse in={open} timeout="auto" unmountOnExit>
                 {component.nested.map(component=><Root {...component}
-                                                  asd={component === component.asd}
+                                                  highlight={component === component.highlight}
                                                   key={component.level + component.name + component.id} />)}
             </Collapse>}
             </List>
